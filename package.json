@@ -1,0 +1,20 @@
+{
+  "name": "zappdai-intake",
+  "version": "1.0.0",
+  "description": "ZappdAI Slack app: restaurant customer intake & post-sales handoff",
+  "main": "app.js",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "test": "node --test",
+    "demo": "node scripts/demo.js"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@slack/bolt": "^3.19.0",
+    "dotenv": "^16.4.5"
+  }
+}
