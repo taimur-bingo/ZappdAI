@@ -31,6 +31,11 @@ const config = Object.freeze({
   SIGNOFF_DAY: toInt(process.env.SIGNOFF_DAY, 7),
   GOLIVE_DAY: toInt(process.env.GOLIVE_DAY, 10),
 
+  // Optional: enables auto-creating the Asana onboarding project + Pipeline
+  // board card on every intake submission. Left unset, that step no-ops
+  // and the rest of the app behaves exactly as it does today.
+  ASANA_ACCESS_TOKEN: process.env.ASANA_ACCESS_TOKEN || '',
+
   /**
    * Throws with a clear message if required credentials for the selected
    * connection mode are missing. Call this once at app startup.

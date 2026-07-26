@@ -10,7 +10,8 @@
   "scripts": {
     "start": "node app.js",
     "test": "node --test",
-    "demo": "node scripts/demo.js"
+    "demo": "node scripts/demo.js",
+    "asana-demo": "node scripts/asana-sync-demo.js"
   },
   "license": "UNLICENSED",
   "dependencies": {

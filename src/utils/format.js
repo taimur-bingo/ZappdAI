@@ -115,4 +115,4 @@ function buildLogText(intake, channelId) {
   );
 }
 
-module.exports = { buildSummaryBlocks, buildLogText };
+module.exports = { buildSummaryBlocks, buildLogText, val, EMPTY };

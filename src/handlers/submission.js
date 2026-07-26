@@ -7,6 +7,7 @@ const { buildSummaryBlocks, buildLogText } = require('../utils/format');
 const { buildOnboardingBlocks } = require('../onboarding');
 const { createHandoffChannel, resolveLeadUserId, inviteUsers } = require('../slack/channel');
 const { CALLBACK_ID } = require('../intakeForm');
+const { syncToAsana } = require('../asana/sync');
 
 const REQUIRED_FIELDS = {
   restaurant_name: 'Restaurant name is required.',
@@ -157,10 +158,43 @@ function register(app) {
         }
       }
 
+      // Best-effort: create the Asana onboarding project + Pipeline board
+      // card. syncToAsana already catches its own errors and returns
+      // { error } instead of throwing, but this is guarded too so nothing
+      // here can ever take down the Slack confirmation below.
+      let asanaResult;
+      try {
+        asanaResult = await syncToAsana({ intake, milestones, channel, logger });
+      } catch (err) {
+        logger.error('Unexpected error calling syncToAsana', err);
+        asanaResult = { error: err };
+      }
+
+      let asanaDmLine = '';
+      if (asanaResult && asanaResult.projectUrl) {
+        asanaDmLine = `\n📋 Asana: <${asanaResult.projectUrl}|onboarding project> · <${asanaResult.pipelineCardUrl}|Pipeline card>`;
+        await client.chat.postMessage({
+          channel: channel.id,
+          text: `Asana tracking created for ${intake.restaurant_name}`,
+          blocks: [
+            {
+              type: 'section',
+              text: {
+                type: 'mrkdwn',
+                text: `📋 *Asana tracking*\n<${asanaResult.projectUrl}|Onboarding project> · <${asanaResult.pipelineCardUrl}|Pipeline card>`,
+              },
+            },
+          ],
+        });
+      } else if (asanaResult && asanaResult.error) {
+        asanaDmLine =
+          "\n⚠️ Asana project wasn't created automatically — set it up from the TEMPLATE project.";
+      }
+
       await dmUser(
         client,
         salesRep,
-        `✅ Created <#${channel.id}> for *${intake.restaurant_name}* and looped in the onboarding team.`
+        `✅ Created <#${channel.id}> for *${intake.restaurant_name}* and looped in the onboarding team.${asanaDmLine}`
       );
     } catch (err) {
       logger.error('Intake submission failed', err);
