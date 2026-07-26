@@ -116,6 +116,24 @@ Try it without a live Slack workspace: `npm run asana-demo` (see
 [Development](#development)) creates a real, obviously-named demo project
 and card you can open and then delete.
 
+## Daily standup digest
+
+Set `STANDUP_CHANNEL` in `.env` (defaults to `#onboarding-standup`, quoted —
+`#` starts a comment in `.env` files if left unquoted) and, once a day at
+`STANDUP_HOUR:STANDUP_MINUTE` local time (default 9:00 AM), the app posts
+one message there covering every restaurant currently onboarding: its gate
+(`G2 of 6`), day count against the Kickoff Date on its Pipeline card, and an
+⚠️ flag for any task blocked more than 48 hours — with a dedicated
+"Blockers past 48h" section when at least one exists, matching the huddle
+rule in the Pipeline board's own cadence notes.
+
+Requires `ASANA_ACCESS_TOKEN` (same as Asana sync above); leave
+`STANDUP_CHANNEL` empty to disable the digest entirely. The bot must be a
+member of that channel — `/invite` it there once.
+
+Try it immediately without waiting for the schedule: `npm run digest-demo`
+posts a real digest right now.
+
 ## Setup
 
 1. Create a Slack app from `manifest.yml` (**Create New App → From a
@@ -143,11 +161,13 @@ npm install       # install dependencies
 npm test          # run the unit tests (node --test)
 npm run demo      # print a sample channel name, timeline, and Block Kit payloads — no Slack connection needed
 npm run asana-demo  # LIVE: creates a real demo project + Pipeline card via the Asana API (needs ASANA_ACCESS_TOKEN)
+npm run digest-demo # LIVE: posts a real daily digest right now (needs ASANA_ACCESS_TOKEN, SLACK_BOT_TOKEN, STANDUP_CHANNEL)
 ```
 
-The pure logic (`src/utils/*`, `src/onboarding.js`, `src/asana/format.js`)
-has zero dependency on `@slack/bolt` or `dotenv`, so `npm test` runs even
-without `npm install`.
+The pure logic (`src/utils/*`, `src/onboarding.js`, `src/asana/format.js`,
+`src/asana/digestFormat.js`, `src/schedule.js`'s `msUntilNext`) has zero
+dependency on `@slack/bolt` or `dotenv`, so `npm test` runs even without
+`npm install`.
 
 ## Customizing
 
@@ -165,6 +185,11 @@ without `npm install`.
   fields) live in [`src/asana/constants.js`](src/asana/constants.js); the
   notes written into the new project/card come from
   [`src/asana/format.js`](src/asana/format.js).
+- **Daily digest**: gate/blocker computation is in
+  [`src/asana/status.js`](src/asana/status.js), message formatting in
+  [`src/asana/digestFormat.js`](src/asana/digestFormat.js) (edit the 48h
+  threshold or the message layout there), and the schedule time via
+  `STANDUP_HOUR` / `STANDUP_MINUTE` in `.env`.
 
 ## Tech
 

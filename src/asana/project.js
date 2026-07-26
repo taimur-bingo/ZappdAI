@@ -3,8 +3,12 @@
 const { asanaRequest } = require('./client');
 const { WORKSPACE_GID, TEAM_GID, TEMPLATE_PROJECT_GID } = require('./constants');
 
-const POLL_INTERVAL_MS = 1500;
-const MAX_POLL_ATTEMPTS = 20; // ~30s
+const POLL_INTERVAL_MS = 2000;
+// ~3 minutes. A real duplicate of the 51+ task template has been observed
+// to take longer than the original 30s budget under normal load — this
+// runs after Slack's view submission is already ack'd, so there's no
+// interactive-response deadline forcing this to stay short.
+const MAX_POLL_ATTEMPTS = 90;
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));

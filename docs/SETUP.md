@@ -58,7 +58,9 @@ cp .env.example .env
 | `CHANNEL_VISIBILITY` | `private` | `private` or `public` |
 | `SIGNOFF_DAY` | `7` | Days after kickoff for menu sign-off milestone |
 | `GOLIVE_DAY` | `10` | Days after kickoff for go-live milestone |
-| `ASANA_ACCESS_TOKEN` | — | Optional. Enables auto-creating the Asana onboarding project + Pipeline card (see below) |
+| `ASANA_ACCESS_TOKEN` | — | Optional. Enables auto-creating the Asana onboarding project + Pipeline card, and the daily digest (see below) |
+| `STANDUP_CHANNEL` | `#onboarding-standup` | Where the daily digest posts. **Must be quoted** in `.env` (`"#onboarding-standup"`) — an unquoted `#` starts a comment and silently empties the value. Empty disables the digest |
+| `STANDUP_HOUR` / `STANDUP_MINUTE` | `9` / `0` | Local time the digest posts, daily |
 
 `config.validate()` throws a clear error at startup if a required token for
 your chosen mode is missing. `ASANA_ACCESS_TOKEN` is **not** in that
@@ -86,7 +88,23 @@ Pipeline board, its custom fields) are in
 [`../src/asana/constants.js`](../src/asana/constants.js) — update them
 there if those Asana objects are ever recreated.
 
-## 5. Install, run, test
+## 5. (Optional) Daily standup digest
+
+1. Create `#onboarding-standup` in Slack if it doesn't exist yet (or point
+   `STANDUP_CHANNEL` at whatever channel you want instead).
+2. Invite the bot to it: `/invite @ZappdAI` (or your app's name) in that
+   channel. Without this, posting fails with `not_in_channel`.
+3. Confirm `STANDUP_CHANNEL` in `.env` is **quoted** — see the table above.
+4. Sanity-check it right now, without waiting for the schedule:
+
+   ```bash
+   npm run digest-demo
+   ```
+
+   This posts a real message to `STANDUP_CHANNEL` covering every current
+   restaurant's gate, day count, and any blockers past 48h.
+
+## 6. Install, run, test
 
 ```bash
 npm install
@@ -94,9 +112,10 @@ npm start   # runs app.js, connects to Slack
 npm test    # node --test — runs with zero installed deps
 npm run demo   # prints a sample channel name, timeline, and Block Kit JSON, no Slack connection
 npm run asana-demo   # LIVE: exercises the real Asana API (needs ASANA_ACCESS_TOKEN) — see step 4
+npm run digest-demo  # LIVE: posts a real daily digest right now — see step 5
 ```
 
-## 6. Try it
+## 7. Try it
 
 In any channel the bot has been added to (or any channel, for the slash
 command itself), run:

@@ -36,6 +36,14 @@ const config = Object.freeze({
   // and the rest of the app behaves exactly as it does today.
   ASANA_ACCESS_TOKEN: process.env.ASANA_ACCESS_TOKEN || '',
 
+  // Optional: enables the daily onboarding-status digest (also needs
+  // ASANA_ACCESS_TOKEN — no Asana token, no data to post). Empty/unset
+  // disables it; .env.example ships it pre-filled with the recommended
+  // channel.
+  STANDUP_CHANNEL: process.env.STANDUP_CHANNEL || '',
+  STANDUP_HOUR: toInt(process.env.STANDUP_HOUR, 9),
+  STANDUP_MINUTE: toInt(process.env.STANDUP_MINUTE, 0),
+
   /**
    * Throws with a clear message if required credentials for the selected
    * connection mode are missing. Call this once at app startup.

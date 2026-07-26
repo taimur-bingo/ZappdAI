@@ -25,9 +25,12 @@ module.exports = Object.freeze({
   // "G0 - Discovery" section on the Pipeline board — new cards land here.
   PIPELINE_G0_SECTION_GID: '1216873958348143',
 
-  // Custom fields on the Pipeline board.
+  // Custom fields — same field definitions are shared by the Pipeline
+  // board's cards and by every duplicated onboarding project's own tasks
+  // (Asana custom fields are workspace-level, reused across projects).
   CF_KICKOFF_DATE_GID: '1216874030203366',
   CF_BLOCKED_BY_GID: '1216873759914840',
+  CF_BLOCKED_SINCE_GID: '1216873778841790',
 
   // "Not blocked" option on the Blocked By enum field.
   CF_BLOCKED_BY_NOT_BLOCKED_OPTION_GID: '1216873759914841',
